@@ -9,10 +9,14 @@ def arg_parser():
     
     parser.add_argument('-v', '--version', action='version', version=__version__)
 
-    required = parser.add_argument_group('Required arguments')
-    required.add_argument('--filename', required=True,
-                        help='A json file containing anatomical terms')
-
+    args = parser.add_argument_group('options')
+    args.add_argument('-o', dest='term', help='search with ontology term(s)')
+    args.add_argument('-t', dest='min_sim', help='set threshold for similarity score (default: 0.8).')
+    args.add_argument('-s', dest='topk', help='set maximum number of models to retrieve (default: 5).')
+    args.add_argument('-q', dest='query', help='search with free text query.')
+    args.add_argument('-f', dest='source_file', help='search with a json file containing anatomical terms.')
+    args.add_argument('-d', dest='dest_file', help='file destination to save the results..')
+    
     return parser
 
 #===============================================================================

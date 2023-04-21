@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "pmr-search"
+version = "0.0.1"
+description = "Searching models in the PMR using UBERON and ILX terms"
+authors = ["Yuda Munarko <yuda.munarko@gmail.com>"]
+repository = "http://github.com/napakalas/pmr-sparc-sparql"
+license = "Apache 2.0"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+SPARQLWrapper = "^2.0.0"
+requests = "^2.28.0"
+torch = "^1.13.0"
+sentence-transformers = "^2.2.2"
+
+[tool.poetry.scripts]
+pmrsparql = 'pmr_search.__main__:main'
