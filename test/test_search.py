@@ -1,33 +1,17 @@
 import json
 
-from pmr_search import ModelSearch
+from pmr_search import ModelSearch, SPARQL
 
-model_search = ModelSearch()
-# results = model_search.search({'filename':'~/Documents/MapCore/flatmap-source/functional-connectivity/annotation.json', 'method':SPARQL})
-# with open('/Users/ymun794/Documents/MapCore/temporary/annotation.json', 'w') as fp:
-#     json.dump(results, fp)
+ms = ModelSearch()
 
-# def search_model(self, args):
-#     filename = os.path.expanduser(args.get('filename'))
-#     method = args.get('method', EMBEDDING)
-    
-#     with open(filename, 'r') as fp:
-#         annotations = json.load(fp)
-#     terms = list(set([ann['Model'] for values in annotations.values() 
-#                         for ann in values if 'Model' in ann]))
-    
-#     if method != SPARQL:
-#         models = self.get_models_embedding(terms)
-#     else:
-#         models = self.get_models_sparql(terms)
-#         for values in annotations.values():
-#             for ann in tqdm(values):
-#                 if 'Model' in ann:
-#                     ann['PMR'] = models[ann['Model']]
-#     return annotations
+print('. testing free text')
+results = ms.search('basolateral plasma membrane')
+assert len(results) == 0, f"... number of results greater than 0 expected, got: {len(results)}"
 
-print(model_search.search('basolateral plasma membrane'))
-
-
+print('. testing UBERON')
+results = ms.search('UBERON:0001629', ['Carotid body'], topk = 5, min_sim= 0.8, c_weight=0.6)
+assert len(results) == 0, f"... EMBEDDING: number of results greater than 0 expected, got: {len(results)}"
+results = ms.search('UBERON:0001629', ['Carotid body'], topk = 5, min_sim= 0.8, c_weight=0.6, client_type=SPARQL)
+assert len(results) != 0, f"... SPARQL: number of results equal to 0 expected, got: {len(results)}"
 
 print('Done')

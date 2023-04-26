@@ -79,12 +79,13 @@ class EmbeddingClient:
         cos_scores = util.pytorch_cos_sim(query_emb, self.__term_embs)[0]
         top_results = torch.topk(cos_scores, k=topk)
         cellml_res = []
-        for rank, (score, idx) in enumerate(zip(top_results[0], top_results[1])):
-            if score < min_sim:
-                break
-            rst = {'score': (score.item(), self.__terms[idx], self.__pmr_term[self.__terms[idx]]['label'])}
-            rst.update(self.__get_wks_exp(self.__terms[idx]))
-            cellml_res += [rst]
+        if len(query.strip()) > 0:
+            for rank, (score, idx) in enumerate(zip(top_results[0], top_results[1])):
+                if score < min_sim:
+                    break
+                rst = {'score': (score.item(), self.__terms[idx], self.__pmr_term[self.__terms[idx]]['label'])}
+                rst.update(self.__get_wks_exp(self.__terms[idx]))
+                cellml_res += [rst]
         return cellml_res
     
     def __get_exposure(self, cellml_id):
@@ -104,12 +105,13 @@ class EmbeddingClient:
         cos_scores = util.pytorch_cos_sim(query_emb, self.__cellml_embs)[0]
         top_results = torch.topk(cos_scores, k=topk)
         cellml_res = []
-        for rank, (score, idx) in enumerate(zip(top_results[0], top_results[1])):
-            if score < min_sim:
-                break
-            cellml_id = self.__cellml_ids[idx]
-            cellml = self.__cellmls['data'][cellml_id]
-            cellml_res += [{'score':score.item(), 'exposure':[self.__get_exposure(cellml_id)], 'workspace':[cellml['workspace']], 'cellml':[cellml_id]}]
+        if len(query.strip()) > 0:
+            for rank, (score, idx) in enumerate(zip(top_results[0], top_results[1])):
+                if score < min_sim:
+                    break
+                cellml_id = self.__cellml_ids[idx]
+                cellml = self.__cellmls['data'][cellml_id]
+                cellml_res += [{'score':score.item(), 'exposure':[self.__get_exposure(cellml_id)], 'workspace':[cellml['workspace']], 'cellml':[cellml_id]}]
         return cellml_res
     
     def to_embedding(self, term_data):

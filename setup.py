@@ -11,11 +11,17 @@ setup(
     license='Apache 2.0',
     packages=['pmr_search'],
     zip_safe=False,
+    entry_points={
+        'console_scripts': [
+            'pmr_search = pmr_search.__main__:main',
+        ],
+    },
     install_requires=[
         'torch>=1.13.0',
         'sentence-transformers>=2.2.2',
         'requests>=2.28.0',
         'SPARQLWrapper>=2.0.0',
+        'tqdm',
     ],
     
       
