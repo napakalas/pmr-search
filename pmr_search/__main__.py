@@ -43,7 +43,7 @@ def multi_search(source_file, dest_file, topk, min_sim):
             cand_model = ms.search(term_id, context=[context, 'Human'], topk=topk, min_sim=min_sim, c_weight=1)
             if len(cand_model) > 0:
                 model = cand_model[0]
-                pmr_model = ((model['exposure'] + model['workspace'] + model['cellml'])[0]
+                pmr_model = (model['exposure'] + model['workspace'] + model['cellml'])[0]
                 ann['pmr'] = {'score': model['score'], 'pmr_model': pmr_model}
 
     with open(dest_file, 'w') as fp:
