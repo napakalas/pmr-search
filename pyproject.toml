@@ -12,6 +12,7 @@ SPARQLWrapper = "^2.0.0"
 requests = "^2.28.0"
 torch = "^1.13.0"
 sentence-transformers = "^2.2.2"
+tqdm = "^4.64.1"
 
 [tool.poetry.scripts]
-pmrsparql = 'pmr_search.__main__:main'
+pmr_search = 'pmr_search.__main__:main'

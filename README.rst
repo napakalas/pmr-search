@@ -1,5 +1,4 @@
-Here's an example of an RST script for the same text:
-
+==========
 pmr_search
 ==========
 
@@ -13,24 +12,31 @@ Installation
 ------------
 To install `pmr-search`, you can use pip:
 
-```
-pip install git+https://github.com/napakalas/pmr-search.git
-```
+.. code-block:: 
+    
+    pip install git+https://github.com/napakalas/pmr-search.git
 
 Usage
 -----
-```
-pmr_search -o {ontology term} -t {threshold} -s {size}
-pmr_search -s {size} -q {query}
-pmr_search -s {size} -f {file} -d {destination}
-```
+.. code-block::
+
+   pmr_search -o {ontology term} -t {threshold} -s {size}
+   pmr_search -s {size} -o {query}
+   pmr_search -s {size} -f {file} -d {destination} -t {threshold}
+
+to add PMR's models to an annotation.json for FC:
+
+.. code-block::
+   
+   # example
+   pmr_search -f annotation.json -d new/annotation.json -t 0.84
+    
 
 Options
 -------
 - `-o {ontology term}` : search with ontology term(s).
 - `-t {threshold}` : set threshold for similarity score (default: 0.8).
 - `-s {size}` : set maximum number of models to retrieve (default: 5).
-- `-q {query}` : search with free text query.
 - `-f {file}` : search with a json file containing anatomical terms.
 - `-d {destination}` : file destination to save the results.
 
