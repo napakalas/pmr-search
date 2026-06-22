@@ -24,19 +24,51 @@ Or with pip:
 
 Usage
 -----
-.. code-block::
+CLI
+~~~
 
-   pmr_search -o {ontology term} -t {threshold} -s {size}
-   pmr_search -s {size} -o {query}
-   pmr_search -s {size} -f {file} -d {destination} -t {threshold}
+Ontology term query:
 
-to add PMR's models to an annotation.json for FC:
+.. code-block:: bash
 
-.. code-block::
-   
-   # example
-   pmr_search -f annotation.json -d new/annotation.json -t 0.84
-    
+   pmr_search -o UBERON:0001629 -t 0.84 -s 5
+
+Free text query:
+
+.. code-block:: bash
+
+   pmr_search -o "basolateral plasma membrane" -t 0.84 -s 5
+
+Free text query with your example terms:
+
+.. code-block:: bash
+
+   pmr_search -o "Apical and basolateral epithelial" -t 0.84 -s 5
+   pmr_search -o "Aquaporin-1 (AQP1, Mouse)" -t 0.84 -s 5
+
+Batch query from JSON (for FC annotations):
+
+.. code-block:: bash
+
+   pmr_search -f annotation.json -d new/annotation.json -t 0.84 -s 5
+
+Example `annotation.json` input:
+
+.. code-block:: json
+
+    {
+       "GroupA": [
+          {
+             "Model": "UBERON:0001629",
+             "Organ": "Carotid body"
+          },
+          {
+             "Models": "Aquaporin-1 (AQP1, Mouse)",
+             "Organ/System": "Kidney"
+          }
+       ]
+    }
+
 
 Options
 -------
@@ -46,25 +78,69 @@ Options
 - `-f {file}` : search with a json file containing anatomical terms.
 - `-d {destination}` : file destination to save the results.
 
-To use `pmr-search` in your Python code, import it in your Python script:
+Python API
+~~~~~~~~~~
+
+Import:
 
 .. code-block:: python
 
-   from pmr_search import ModelSearch
+   from pmr_search import ModelSearch, EMBEDDING, SPARQL
 
-Then you can create a `ModelSearch` object and call `search` function with the appropriate arguments to search for models in PMR:
-
-.. code-block:: python
-
-   ms = ModelSearch() 
-   results = ms.search('UBERON:0001629')
-   print(result)
+1. Embedding search with ontology term:
 
 .. code-block:: python
 
-   from pmr_search import EMBEDDING
-   results = ms.search('UBERON:0002173', context=['Lungs'], topk=5, min_sim=0.85, c_weight=0.5, client_type=EMBEDDING)
+   ms = ModelSearch()
+   results = ms.search("UBERON:0001629", client_type=EMBEDDING)
+   print(results)
+   ms.close()
 
-   from pmr_search import SPARQL
-   results = ms.search('UBERON:0002173', client_type=SPARQL)
+2. Embedding search with free text:
+
+.. code-block:: python
+
+   ms = ModelSearch()
+   results = ms.search("basolateral plasma membrane", topk=5, min_sim=0.84)
+   print(results)
+   ms.close()
+
+3. Embedding search with your text examples and context:
+
+.. code-block:: python
+
+   ms = ModelSearch()
+   results_1 = ms.search(
+       "Apical and basolateral epithelial",
+       context=["Kidney", "Human"],
+       topk=5,
+       min_sim=0.84,
+       c_weight=0.6,
+       client_type=EMBEDDING,
+   )
+   results_2 = ms.search(
+       "Aquaporin-1 (AQP1, Mouse)",
+       context=["Kidney", "Mouse"],
+       topk=5,
+       min_sim=0.84,
+       c_weight=0.6,
+       client_type=EMBEDDING,
+   )
+   print(results_1)
+   print(results_2)
+   ms.close()
+
+4. SPARQL search (annotation lookup):
+
+.. code-block:: python
+
+   ms = ModelSearch()
+   results = ms.search("UBERON:0002173", client_type=SPARQL)
+   print(results)
+   ms.close()
+
+Notes:
+
+- SPARQL search is network-bound and slower.
+- Embedding search is local and generally much faster.
 
