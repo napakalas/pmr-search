@@ -10,10 +10,16 @@ Embedding-based execution is much faster and lends itself well to explorative se
 
 Installation
 ------------
-To install `pmr-search`, you can use pip:
+To install `pmr-search`, you can use `uv` (recommended) or `pip`:
 
-.. code-block:: 
-    
+.. code-block:: bash
+
+    uv add git+https://github.com/napakalas/pmr-search.git
+
+Or with pip:
+
+.. code-block:: bash
+
     pip install git+https://github.com/napakalas/pmr-search.git
 
 Usage
@@ -40,7 +46,7 @@ Options
 - `-f {file}` : search with a json file containing anatomical terms.
 - `-d {destination}` : file destination to save the results.
 
-To use `pmr-search` in your Python code, you can install it using pip and then import it in your Python script:
+To use `pmr-search` in your Python code, import it in your Python script:
 
 .. code-block:: python
 
