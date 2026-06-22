@@ -1,0 +1,12 @@
+{
+  "GroupA": [
+    {
+      "Model": "UBERON:0001629",
+      "Organ": "Carotid body"
+    },
+    {
+      "Models": "Aquaporin-1 (AQP1, Mouse)",
+      "Organ/System": "Kidney"
+    }
+  ]
+}
