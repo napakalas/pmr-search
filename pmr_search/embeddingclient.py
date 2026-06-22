@@ -16,12 +16,14 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class EmbeddingClient:
     def __init__(self):
-        data = torch.load(os.path.join(BASE_DIR, SEARCH_DATA))
+        self.__model = SentenceTransformer(BERTModel)
+        device = self.__model.device
+        data = torch.load(os.path.join(BASE_DIR, SEARCH_DATA), map_location=device, weights_only=False)
         self.__term_embs = data['embedding']
         self.__terms = data['term']
         self.__pmr_term = data['pmrTerm']
         self.__sckan_term = data['sckanTerm']
-        self.__cellmls = data['cellml']        
+        self.__cellmls = data['cellml']
         self.__cluster = data['cluster']
         self.__term_cellmls = data['termCellml']
         self.__cellml_ids = data['cellmlId']
@@ -37,9 +39,9 @@ class EmbeddingClient:
             context_emb = torch.mean(self.__model.encode(context, convert_to_tensor=True)) * c_weight
             query_emb = (query_emb + context_emb) / (1 + c_weight)
         return query_emb
-    
+
     def __get_wks_exp(self, term):
-        
+
         cellmls = self.__term_cellmls[term]
         workspaces, exposures = [], []
         for cellml_id in cellmls:
@@ -52,7 +54,7 @@ class EmbeddingClient:
 
         if len(exposures) > 0:
             return {'exposure':exposures, 'workspace':workspaces, 'cellml':cellmls}
-        
+
         # check other model if exposure is not available
         available_cellml = []
         for cellml_id in self.__term_cellmls[term]:
@@ -73,7 +75,7 @@ class EmbeddingClient:
             if 'exposure' in self.__cellmls['data'][cellml_id]:
                 exposures += [cellml['exposure']] if cellml['exposure'] not in exposures else []
         return {'exposure':exposures, 'workspace':workspaces, 'cellml':available_cellml}
-    
+
     def search(self, query, context, topk, min_sim, c_weight):
         query_emb = self.__get_query_embedding(query, context, c_weight)
         cos_scores = util.pytorch_cos_sim(query_emb, self.__term_embs)[0]
@@ -87,7 +89,7 @@ class EmbeddingClient:
                 rst.update(self.__get_wks_exp(self.__terms[idx]))
                 cellml_res += [rst]
         return cellml_res
-    
+
     def __get_exposure(self, cellml_id):
         if 'exposure' in self.__cellmls['data'][cellml_id]:
             return self.__cellmls['data'][cellml_id]['exposure']
@@ -99,7 +101,7 @@ class EmbeddingClient:
                     if 'exposure' in self.__cellmls['data'][sim_cellml_id]:
                         return self.__cellmls['data'][sim_cellml_id]['exposure']
         return ''
-                
+
     def search_by_cellml(self, query, context=[], topk=5, min_sim=0.5, c_weight=0.5, verbose=True):
         query_emb = self.__get_query_embedding(query, context, c_weight)
         cos_scores = util.pytorch_cos_sim(query_emb, self.__cellml_embs)[0]
@@ -113,19 +115,19 @@ class EmbeddingClient:
                 cellml = self.__cellmls['data'][cellml_id]
                 cellml_res += [{'score':score.item(), 'exposure':[self.__get_exposure(cellml_id)], 'workspace':[cellml['workspace']], 'cellml':[cellml_id]}]
         return cellml_res
-    
+
     def to_embedding(self, term_data):
         embs = self.__model.encode(term_data['label'], convert_to_tensor=True)
         if len(term_data['synonym']) > 0:
             syn_embs = torch.mean(self.__model.encode(term_data['synonym'], convert_to_tensor=True), 0) * ALPHA
             embs = (embs + syn_embs) / (1 + ALPHA)
-        
+
         added_term = term_data['def'] if isinstance(term_data['def'], list) else [term_data['def']] + term_data['is_a_text']
-        
+
         if len(added_term) > 0:
             added_embs = torch.mean(self.__model.encode(added_term, convert_to_tensor=True), 0) * BETA
             embs = (embs + added_embs) / (1 + BETA)
-        
+
         return embs
-    
+
 #===============================================================================
