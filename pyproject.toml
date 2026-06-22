@@ -1,18 +1,31 @@
-[tool.poetry]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
 name = "pmr-search"
 version = "0.0.1"
 description = "Searching models in the PMR using UBERON and ILX terms"
-authors = ["Yuda Munarko <yuda.munarko@gmail.com>"]
-repository = "http://github.com/napakalas/pmr-sparc-sparql"
-license = "Apache 2.0"
+authors = [
+    { name = "Yuda Munarko", email = "yuda.munarko@gmail.com" }
+]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.12"
+dependencies = [
+    "SPARQLWrapper>=2.0.0",
+    "requests>=2.31.0",
+    "torch>=2.1.0",
+    "sentence-transformers>=3.0.0",
+    "tqdm>=4.66.0",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10,<4.0"
-SPARQLWrapper = "^2.0.0"
-requests = "^2.28.0"
-torch = "^1.13.0"
-sentence-transformers = "^2.2.2"
-tqdm = "^4.64.1"
+[project.urls]
+Repository = "http://github.com/napakalas/pmr-sparc-sparql"
 
-[tool.poetry.scripts]
-pmr_search = 'pmr_search.__main__:main'
+[project.scripts]
+pmr_search = "pmr_search.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
